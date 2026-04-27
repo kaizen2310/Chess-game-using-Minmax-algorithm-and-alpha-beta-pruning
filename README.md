@@ -273,8 +273,8 @@ Feel free to extend this project:
 
 ## Author
 
-Ahmed Alkholy
-
+Shreeparth Torawane
+https://github.com/kaizen2310
 ## License
 
 This project is free to use and modify for personal and educational purposes.
