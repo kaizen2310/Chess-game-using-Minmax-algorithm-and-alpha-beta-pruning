@@ -202,7 +202,23 @@ const startBoard = (game, options = { playAgainst: 'human', aiColor: 'black', ai
             return;
         }
 
+        resetBoard();
         clearSquares();
+
+        // After undo, if it's AI's turn and we're playing against AI, undo again to get back to human's turn
+        if (options.playAgainst === 'ai' && game.turn === options.aiColor) {
+            const hasSecondUndo = game.undo();
+            if (hasSecondUndo) {
+                resetBoard();
+                clearSquares();
+            }
+        }
+
+        // Update display for human player's turn
+        const humanColor = options.playAgainst === 'ai' ? (options.aiColor === 'white' ? 'black' : 'white') : game.turn;
+        gameState = humanColor + '_turn';
+        turnSign.innerHTML = humanColor === 'white' ? "White's Turn" : "Black's Turn";
+        
         checkWarningSign.textContent = game.king_checked(game.turn)
             ? (game.turn === 'white' ? 'White' : 'Black') + ' king is in check'
             : '';

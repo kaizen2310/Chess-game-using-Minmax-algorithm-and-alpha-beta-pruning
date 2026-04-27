@@ -79,6 +79,8 @@ class Game {
 				this.softChangeTurn();
 			}
 		}
+
+		return true;
 	}
 
 	on(eventName, callback) {
