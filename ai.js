@@ -5,9 +5,9 @@ const ai = (aiTurn, aiLevel = 'dumb') => {
 
     const depthByLevel = {
         dumb: 2,
-        easy: 2,
-        medium: 3,
-        hard: 4
+        easy: 3,
+        medium: 4,
+        hard: 6
     };
 
     const deepest = depthByLevel[aiLevel] || depthByLevel.medium;
