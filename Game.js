@@ -8,6 +8,7 @@ class Game {
 
 		this.turn = turn;
 		this.clickedPiece = null;
+
 		this._events = {
 			pieceMove: [],
 			kill: [],
