@@ -2,8 +2,13 @@
 <html>
 <head>
 	<title>Chess Game</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 	<link rel="stylesheet" type="text/css" href="chess.css">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#0b1117" />
 	<meta property="og:image" content="img/share.jpeg" />
 	<meta property="og:description" content="A complete well automated chess game made by JavaScript that contains AI. Check it out. I hope you like it." />
 	<meta name="author" content="Ahmed Alkholy">
@@ -11,50 +16,77 @@
 </head>
 <body>
 
+<div class="page-bg"></div>
+
+<header class="topbar">
+	<div class="brand-lockup">
+		<div class="brand-mark">
+			<i class="fa-solid fa-chess-king"></i>
+		</div>
+		<div>
+			<p class="eyebrow">Strategic Chess Arena</p>
+			<h1>Chess Game</h1>
+		</div>
+	</div>
+	<div class="topbar-chip">
+		<i class="fa-solid fa-wand-magic-sparkles"></i>
+		<span>Human vs AI, polished for fast play</span>
+	</div>
+</header>
+
 <div id="startscene" class="scene show">
-	<div class="scene-content" style="margin-top: 15vh;">
-		<div style="margin-bottom: 50px;">
+	<div class="scene-content start-panel">
+		<div class="scene-card">
+			<p class="eyebrow scene-kicker"><i class="fa-solid fa-chess-board"></i> Match setup</p>
 			<h2>Play Against</h2>
-			<input type="radio" name="oponent" id="humanOponent" value="human" onchange="changeColorSelect()" checked>
-			<label for="humanOponent">Human</label>
-			&ensp;
-			<input type="radio" name="oponent" id="aiOponent" value="ai" onchange="changeColorSelect()">
-			<label for="aiOponent">AI</label>
-		</div>
-		
-		<div class="select-color-container" style="margin-bottom: 50px;display: none;">
-			<h2>Select Your Color</h2>
-			<input type="radio" name="human_color" id="humanColorWhite" value="white" checked>
-			<label for="humanColorWhite">White</label>
-			&ensp;
-			<input type="radio" name="human_color" id="humanColorBlack" value="black">
-			<label for="humanColorBlack">Black</label>
-		</div>
+			<p class="scene-copy">Pick your opponent, tune the challenge, and launch a cleaner chess experience.</p>
 
-		<div class="select-ai-level-container" style="margin-bottom: 50px;display: none;">
-			<h2>Select AI Difficulty</h2>
-			<input type="radio" name="ai_level" id="aiLevelDumb" value="dumb" checked>
-			<label for="aiLevelDumb">Dumb</label>
-			&ensp;
-			<input type="radio" name="ai_level" id="aiLevelEasy" value="easy">
-			<label for="aiLevelEasy">Easy</label>
-			&ensp;
-			<input type="radio" name="ai_level" id="aiLevelMedium" value="medium">
-			<label for="aiLevelMedium">Medium</label>
-			&ensp;
-			<input type="radio" name="ai_level" id="aiLevelHard" value="hard">
-			<label for="aiLevelHard">Hard</label>
-		</div>
+			<div class="choice-group">
+				<input type="radio" name="oponent" id="humanOponent" value="human" onchange="changeColorSelect()" checked>
+				<label for="humanOponent"><i class="fa-solid fa-user-group"></i> Human</label>
+				<input type="radio" name="oponent" id="aiOponent" value="ai" onchange="changeColorSelect()">
+				<label for="aiOponent"><i class="fa-solid fa-robot"></i> AI</label>
+			</div>
+			
+			<div class="select-color-container option-card" style="display: none;">
+				<h2>Select Your Color</h2>
+				<div class="choice-group compact">
+					<input type="radio" name="human_color" id="humanColorWhite" value="white" checked>
+					<label for="humanColorWhite"><i class="fa-regular fa-circle"></i> White</label>
+					<input type="radio" name="human_color" id="humanColorBlack" value="black">
+					<label for="humanColorBlack"><i class="fa-solid fa-circle"></i> Black</label>
+				</div>
+			</div>
 
-		<div class="start-game-container">
-			<button class="button button-big" onclick="startNewGame()">Start Game</button>
+			<div class="select-ai-level-container option-card" style="display: none;">
+				<h2>Select AI Difficulty</h2>
+				<div class="choice-group compact difficulty-group">
+					<input type="radio" name="ai_level" id="aiLevelDumb" value="dumb" checked>
+					<label for="aiLevelDumb">Dumb</label>
+					<input type="radio" name="ai_level" id="aiLevelEasy" value="easy">
+					<label for="aiLevelEasy">Easy</label>
+					<input type="radio" name="ai_level" id="aiLevelMedium" value="medium">
+					<label for="aiLevelMedium">Medium</label>
+					<input type="radio" name="ai_level" id="aiLevelHard" value="hard">
+					<label for="aiLevelHard">Hard</label>
+				</div>
+			</div>
+
+			<div class="start-game-container">
+				<button class="button button-big primary-button" onclick="startNewGame()"><i class="fa-solid fa-play"></i><span>Start Game</span></button>
+			</div>
 		</div>
 	</div>
 	<div class="overlay"></div>
 </div>
 
 <div id="endscene" class="scene">
-	<p class="scene-content winning-sign"></p>
+	<div class="scene-content end-panel">
+		<div class="scene-card end-card">
+			<p class="eyebrow scene-kicker"><i class="fa-solid fa-crown"></i> Game complete</p>
+			<p class="winning-sign"></p>
+		</div>
+	</div>
 	<div class="overlay"></div>
 </div>
 	
@@ -231,9 +263,9 @@
 
 	</div>
 
-<div style="position:absolute;left:15px;bottom:15px;">
-	<button class="flip-board" onclick="boardAnimate()">Flip Board</button>
-	<button class="flip-board" id="undoButton" onclick="undoMove()">Undo</button>
+<div class="floating-controls">
+	<button class="flip-board" onclick="boardAnimate()"><i class="fa-solid fa-rotate"></i><span>Flip Board</span></button>
+	<button class="flip-board" id="undoButton" onclick="undoMove()"><i class="fa-solid fa-rotate-left"></i><span>Undo</span></button>
 </div>
 
 <script type="text/javascript" src="piece.js"></script>

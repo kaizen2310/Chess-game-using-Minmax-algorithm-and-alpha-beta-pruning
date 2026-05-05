@@ -26,16 +26,16 @@ const getMovesBottom = (piece) => {
 }
 
 const getMovesRight = (piece) => {
-	const num = piece.position+'';
+	const rowEnd = Math.floor(piece.position / 10) * 10 + 8;
 	const movesRight = [];
-	for (let move = piece.position+1; move <= parseInt(num[0]+'8'); move++) movesRight.push(move);
+	for (let move = piece.position + 1; move <= rowEnd; move++) movesRight.push(move);
 	return movesRight;
 }
 
 const getMovesLeft = (piece) => {
-	const num = piece.position+'';
+	const rowStart = Math.floor(piece.position / 10) * 10 + 1;
 	const movesLeft = [];
-	for (let move = piece.position-1; move >= parseInt(num[0]+'1'); move--) movesLeft.push(move);
+	for (let move = piece.position - 1; move >= rowStart; move--) movesLeft.push(move);
 	return movesLeft;
 }
 
