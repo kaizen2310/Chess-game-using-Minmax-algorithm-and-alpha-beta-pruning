@@ -1,9 +1,8 @@
 class SimulationGame extends Game {
 
     startNewGame(pieces, turn) {
-		this._setPieces(pieces);
-		this.turn = turn;
-		this.clickedPiece = null;
+        super.startNewGame(pieces, turn);
+        this._enPassantHistory = [null];
 	}
 
 	saveHistory() {}
@@ -17,59 +16,107 @@ class SimulationGame extends Game {
 	undo() {}
 
     getPieceAllowedMoves(pieceName){
-        const piece = this.getPieceByName(pieceName);
-        if(piece && this.turn === piece.color){
-            this.setClickedPiece(piece);
-
-            let pieceAllowedMoves = getAllowedMoves(piece);
-            if (piece.rank === 'king') {
-                pieceAllowedMoves = this.getCastlingSquares(piece, pieceAllowedMoves);
-            }
-
-            return this.unblockedPositions(piece, pieceAllowedMoves, true);
-        }
-        else{
-            return [];
-        }
+        return super.getPieceAllowedMoves(pieceName);
     }
 
     movePiece(pieceName, position) {
-        const piece = this.getPieceByName(pieceName);
+        return super.movePiece(pieceName, position);
+    }
 
-        /*if (!piece) {
-            return false;
-        }*/
-
+    applyMove(move) {
+        const piece = this.getPieceByName(move.pieceName);
+        const position = parseInt(move.position);
+        const previousEnPassantTarget = this.enPassantTarget ? { ...this.enPassantTarget } : null;
+        const previousName = piece.name;
+        const previousRank = piece.rank;
+        const previousAbleToCastle = piece.ableToCastle;
+        const previousTurn = this.turn;
         const prevPosition = piece.position;
-        const existedPiece = this.getPieceByPos(position)
 
-        if (existedPiece) {
-            this.kill(existedPiece);
+        const record = {
+            piece,
+            prevPosition,
+            position,
+            previousName,
+            previousRank,
+            previousAbleToCastle,
+            previousTurn,
+            previousEnPassantTarget,
+            capturedPiece: null,
+            capturedPosition: null,
+            castling: false,
+            rookRecord: null,
+            promoted: false
+        };
+
+        const capturedPiece = this.getPieceByPos(position) || this._getEnPassantCapture(piece, position);
+        if (capturedPiece) {
+            record.capturedPiece = capturedPiece;
+            record.capturedPosition = capturedPiece.position;
+            this._removePiece(capturedPiece);
         }
 
-        const castling = !existedPiece && piece.rank === 'king' && piece.ableToCastle === true;
+        const castling = !capturedPiece && piece.rank === 'king' && piece.ableToCastle === true && Math.abs(position - prevPosition) === 2;
+        record.castling = castling;
 
         if (castling) {
-            if (position - prevPosition === 2) {
-                this.castleRook(piece.color + 'Rook2');
-            }
-            else if (position - prevPosition === -2) {
-                this.castleRook(piece.color + 'Rook1');
-            }
-            changePosition(piece, position, true);
+            const rookName = position - prevPosition === 2 ? piece.color + 'Rook2' : piece.color + 'Rook1';
+            const rook = this.getPieceByName(rookName);
+            const rookFrom = rook.position;
+            const rookTo = rookName.indexOf('Rook2') !== -1 ? rook.position - 2 : rook.position + 3;
+            record.rookRecord = {
+                rook,
+                rookName,
+                rookFrom,
+                rookTo,
+                rookAbleToCastle: rook.ableToCastle
+            };
+            changePosition(rook, rookTo);
         }
-        else {
-            changePosition(piece, position);
-        }
+
+        changePosition(piece, position, castling);
+        this._setEnPassantTarget(piece, prevPosition, position);
 
         if (piece.rank === 'pawn' && (position > 80 || position < 20)) {
-            this.promote(piece);
+            record.promoted = true;
+            this.pieceMap.delete(piece.name);
+            piece.name = piece.name.replace('Pawn', 'Queen');
+            piece.rank = 'queen';
+            this.pieceMap.set(piece.name, piece);
         }
 
-        // this.history.add({ from: prevPosition, to: position, piece: piece, castling });
-        this.changeTurn();
+        this.turn = this.turn === 'white' ? 'black' : 'white';
+        return record;
+    }
 
-        return true;
+    undoMove(record) {
+        if (!record) {
+            return;
+        }
+
+        this.turn = record.previousTurn;
+        this.enPassantTarget = record.previousEnPassantTarget ? { ...record.previousEnPassantTarget } : null;
+
+        if (record.promoted) {
+            this.pieceMap.delete(record.piece.name);
+            record.piece.name = record.previousName;
+            record.piece.rank = record.previousRank;
+            this.pieceMap.set(record.piece.name, record.piece);
+        }
+
+        changePosition(record.piece, record.prevPosition);
+        record.piece.ableToCastle = record.previousAbleToCastle;
+
+        if (record.rookRecord) {
+            const rook = record.rookRecord.rook;
+            changePosition(rook, record.rookRecord.rookFrom);
+            rook.ableToCastle = record.rookRecord.rookAbleToCastle;
+        }
+
+        if (record.capturedPiece) {
+            record.capturedPiece.position = record.capturedPosition;
+            this._addPiece(record.capturedPiece);
+        }
     }
 
     king_checked(color) {

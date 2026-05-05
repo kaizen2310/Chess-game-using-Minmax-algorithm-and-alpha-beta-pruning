@@ -188,6 +188,22 @@ const startBoard = (game, options = { playAgainst: 'human', aiColor: 'black', ai
         setGameState('checkmate');
     });
 
+    game.on('draw', payload => {
+        const endScene = document.getElementById('endscene');
+        const winningSign = endScene.getElementsByClassName('winning-sign')[0];
+        const reasonMessages = {
+            stalemate: 'Draw by stalemate',
+            'threefold-repetition': 'Draw by threefold repetition',
+            'fifty-move': 'Draw by fifty-move rule',
+            'insufficient-material': 'Draw by insufficient material'
+        };
+        const reason = reasonMessages[payload?.reason] || 'Draw';
+        winningSign.innerHTML = reason;
+        endScene.classList.add('show');
+        checkWarningSign.textContent = '';
+        setGameState('checkmate');
+    });
+
     game.on('check', color => {
         checkWarningSign.textContent = (color === 'white' ? 'White' : 'Black') + ' king is in check';
     });
